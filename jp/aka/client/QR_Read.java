@@ -1,4 +1,5 @@
-package jp.aka.sample;
+package jp.aka.client;
+
 import java.awt.Color;
 
 import com.jutil.Http.HttpWrapper;
@@ -14,7 +15,7 @@ import jp.vstone.RobotLib.CSotaMotion;
 import jp.vstone.camera.CameraCapture;
 import jp.vstone.sotatalk.MotionAsSotaWish;
 
-public class CameraTest {
+public class QR_Read {
 	static String TAG = "MotionSample";
 	static String API_HOME = "http://150.59.20.116:8000";
 	static String QR_PATH = "./qr.jpg";
