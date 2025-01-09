@@ -15,10 +15,11 @@ public class Chat {
 	static final String API_HOME = "http://150.59.20.116:8000"; // サーバーPC
 	private static final String TAG = "Chat";
 
-	public static String simpleChat(String inputText) {
+	public static String simpleChat(String inputText, long userId) {
 		GenerateReq requestGen = new GenerateReq();
 		requestGen.setUser_message(inputText);
-
+		requestGen.setUser_id(userId);
+		
 		String url2 = API_HOME + "/generate";
 		GenerateRes responseGen = null;
 

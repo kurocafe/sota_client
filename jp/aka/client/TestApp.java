@@ -20,7 +20,8 @@ public class TestApp {
 	private static final String TAG = "Test1";
 	private static final String API_HOME = "http://150.59.20.116:8000";
 	private static final String QR_PATH = "./qr.jpg";
-
+	private static long userId = -1;
+	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		CRobotPose pose = null;
@@ -32,7 +33,7 @@ public class TestApp {
 		}
 		motion.InitRobot_Sota();
 		motion.ServoOn();
-		sotawish.StartIdling();
+//		sotawish.StartIdling();
 
 		MyHttpCon.setAddress();
 		SpeechRecWithLED.setUpConfigs();
@@ -43,9 +44,9 @@ public class TestApp {
 		CameraCapture cap = null;
 		try {
 			cap = new CameraCapture(CameraCapture.CAP_IMAGE_SIZE_HD_1080, CameraCapture.CAP_FORMAT_3BYTE_BGR);
+			cap.openDevice("/dev/video0");
 			int count = 0;
 			while (count < 60) {
-				cap.openDevice("/dev/video0");
 				cap.snapGetFile(QR_PATH);
 				String url = API_HOME + "/qr_read";
 				QRReadRes response = null;
@@ -55,7 +56,11 @@ public class TestApp {
 				
 				if (response.getResponse() != null) {
 					Logger.info(TAG, "QRコード読み取り成功: " + response.getResponse());
-					CPlayWave.PlayWave_wait("./sound/i_see_QRcode.wav");
+//					CPlayWave.PlayWave_wait("./sound/i_see_QRcode.wav");
+					TextToSpeech.speechWithMotion("QRコード、見えたよ。", sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+					String getUserName = response.getResponse() + "さん、よろしくね。";
+					TextToSpeech.speechWithMotion(getUserName, sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+					userId = response.getUser_id();
 					break;
 				}
 				
@@ -76,7 +81,7 @@ public class TestApp {
 			
 			String recResult = new SpeechRecWithLED().start(motion, pose);
 			Logger.info(TAG, recResult);
-			String genResult = Chat.simpleChat(recResult);
+			String genResult = Chat.simpleChat(recResult, userId);
 			TextToSpeech.speechWithMotion(genResult, sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
 		}
 	}
