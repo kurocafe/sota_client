@@ -3,6 +3,7 @@ package jp.aka.client;
 import com.jutil.Http.HttpWrapper;
 import com.jutil.Logger.Logger;
 
+import jp.aka.client.Search;
 import jp.aka.sample.values.QRReadRes;
 import jp.ha.SpeechRec;
 import jp.ha.SpeechRecWithLED;
@@ -21,6 +22,7 @@ public class TestApp {
 	private static final String API_HOME = "http://150.59.20.116:8000";
 	private static final String QR_PATH = "./qr.jpg";
 	private static long userId = -1;
+	private static int count = 0;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -39,7 +41,8 @@ public class TestApp {
 		SpeechRecWithLED.setUpConfigs();
 		TextToSpeech.setUpConfigs();
 		
-		CPlayWave.PlayWave_wait("./sound/show_me QRcode.wav");
+//		CPlayWave.PlayWave_wait("./sound/show_me QRcode.wav");
+		TextToSpeech.speechWithMotion("QRコードを見せてね。", sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
 		// QRコード読み取りロジック
 		CameraCapture cap = null;
 		try {
@@ -61,6 +64,10 @@ public class TestApp {
 					String getUserName = response.getResponse() + "さん、よろしくね。";
 					TextToSpeech.speechWithMotion(getUserName, sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
 					userId = response.getUser_id();
+					
+					String getInitMessage = response.getInit_message();
+					TextToSpeech.speechWithMotion(getInitMessage, sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+					
 					break;
 				}
 				
@@ -77,12 +84,23 @@ public class TestApp {
 
 
 //		対話スタート
-		while (true) {
-			
+		while (count < 3) {
 			String recResult = new SpeechRecWithLED().start(motion, pose);
 			Logger.info(TAG, recResult);
 			String genResult = Chat.simpleChat(recResult, userId);
 			TextToSpeech.speechWithMotion(genResult, sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+			count++;
 		}
+		
+//		検索, 送信
+		String getResult = Search.keyword(userId);
+		String getSerchResult = getResult + "に興味があるんだね！";
+		TextToSpeech.speechWithMotion(getSerchResult, sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+		
+		TextToSpeech.speechWithMotion("ディスコードに、ここの研究室の過去の研究を送ったよ。", sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+		TextToSpeech.speechWithMotion("参考にしてみてね。研究、応援しているよ。", sotawish, MotionAsSotaWish.MOTION_TYPE_TALK);
+		
+		
+//		Discordで送る
 	}
 }
